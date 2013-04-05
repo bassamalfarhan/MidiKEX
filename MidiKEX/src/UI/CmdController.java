@@ -1,3 +1,5 @@
+package UI;
+
 import java.util.Scanner;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -6,16 +8,13 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.ShortMessage;
 
+import Utilities.MidiReceiver;
+import Utilities.MidiTransmitter;
+
 public class CmdController {
 	/*
 	 * private final int RECEIVER_ID = 1, TRANSMITTER_ID = 5;
 	 */
-
-	/**
-	 * Names of the notes listed in the order they occur in.
-	 */
-	private final String[] noteNames = { "C", "C#", "D", "D#", "E", "F", "F#",
-			"G", "G#", "A", "A#", "B" };
 
 	/**
 	 * A toggle to determine a state, it is either on or off
@@ -63,11 +62,20 @@ public class CmdController {
 		// playNote(53, toggle.OFF, false);
 
 		Scanner s = new Scanner(System.in);
+		String line = null;
 		while (s.hasNextLine()) {
-			processCommand(s.nextLine());
+			line = s.nextLine();
+			if (line.trim().equals("exit"))
+				break;
+
+			processCommand(line);
 		}
+		s.close();
 	}
 
+	/**
+	 * Prints out a list of available devices, both receivers and transmitters.
+	 */
 	private void printOutAvailableDevices() {
 		int id = 0;
 		println("ID\tDEVICE NAME");
@@ -80,7 +88,7 @@ public class CmdController {
 	}
 
 	/**
-	 * S
+	 * Sets the MIDI IN port.
 	 */
 	public void setMidiReceiver(int id) {
 		MidiDevice device;
@@ -100,11 +108,13 @@ public class CmdController {
 	}
 
 	/**
-	 * @param toggle
-	 *            true : note on; false : note off
-	 * @param velocityBased
-	 *            true : use note_on command + set velocity to 0 if toggle =
-	 *            false
+	 * sends a note on/off command to the keyboard. Some (cheaper MIDI
+	 * keyboards) use velocity based note off, that is setting the velocity to 0
+	 * to indicate the note to be off, this case is supported by the velocity
+	 * based parameter.
+	 * 
+	 * @param toggle note state indicator
+	 * @param velocityBased true : use note_on command + set velocity to 0 if toggle = false
 	 */
 	public void playNote(int note, Toggle toggle, boolean velocityBased) {
 		int noteOnOffVelocity = 64;
@@ -125,6 +135,9 @@ public class CmdController {
 		}
 	}
 
+	/**
+	 * Sets the MIDI OUT port.
+	 */
 	public void setMidiTransmitter(int id) {
 		MidiDevice device;
 		MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
@@ -143,41 +156,57 @@ public class CmdController {
 		}
 	}
 
-	/**
-	 * @param note Integer representing the note
-	 * @return String repres
-	 */
-	public String getNoteName(int note) {
-		return noteNames[note % 12] + ((note / 12) - 1);
-	}
-
 	public static void main(String[] args) {
 		new CmdController();
 	}
 
+	/**
+	 * Overrides the system.out.println for future compatibility issues
+	 * 
+	 * @param string The string to be passed thru to system.out.println
+	 */
 	public void println(Object string) {
 		System.out.println(string);
 	}
 
+	/**
+	 * Overrides the system.out.print for future compatibility issues.
+	 * 
+	 * @param string The string to be passed thru to system.out.print
+	 */
 	public void print(Object string) {
 		System.out.print(string);
 	}
 
+	/*
+	 * Command processor.
+	 * 
+	 * @param line The string to be processed
+	 */
 	private void processCommand(String line) {
+		/*
+		 * Textual responses and function calls are handled inside the Switch
+		 * statement
+		 */
 		switch (line) {
 		case "show devices":
 			printOutAvailableDevices();
 			break;
 		case "exit":
-			println("Bl‰‰‰‰‰‰h, no exit maaaaan....");
+			println("There is no way out atm, sorry...");
 			break;
-		}
-
-		String[] divider = null;
-		if (line.startsWith("set transmitter")) {
-			divider = line.split(" ");
-			setMidiTransmitter(Integer.parseInt(divider[divider.length - 1]
-					.trim()));
+		default:
+			String[] divider = null;
+			if (line.startsWith("set transmitter")) {
+				divider = line.split(" ");
+				setMidiTransmitter(Integer.parseInt(divider[divider.length - 1]
+						.trim()));
+			} else if (line.startsWith("set receiver")) {
+				divider = line.split(" ");
+				setMidiReceiver(Integer.parseInt(divider[divider.length - 1]
+						.trim()));
+			}
+			break;
 		}
 	}
 }

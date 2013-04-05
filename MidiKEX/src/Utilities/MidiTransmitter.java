@@ -1,6 +1,10 @@
+package Utilities;
+
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
+
+import UI.CmdController;
 
 
 public class MidiTransmitter implements Transmitter{
