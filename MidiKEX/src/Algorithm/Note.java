@@ -10,12 +10,17 @@ public class Note {
 	public static final String[] noteNames = { "C", "C#", "D", "D#", "E", "F",
 			"F#", "G", "G#", "A", "A#", "B" };
 
+	public static final boolean[] blackIndex = { false, true, false, true,
+			false, false, true, false, true, false, true, false };
+
 	public Note(int value) {
 		this.value = value;
+		setBlackByValue(value);
 	}
 
 	public Note(int value, boolean staccato) {
 		this.value = value;
+		setBlackByValue(value);
 		this.staccato = staccato;
 	}
 
@@ -27,6 +32,10 @@ public class Note {
 
 	public boolean isStaccato() {
 		return staccato;
+	}
+	
+	private void setBlackByValue(int value){
+		black = blackIndex[value % 12];	
 	}
 
 	public boolean isBlack() {
@@ -44,7 +53,8 @@ public class Note {
 	/**
 	 * Class method in case any outsider wants to know the name of a note.
 	 * 
-	 * @param note Integer representing the note.
+	 * @param note
+	 *            Integer representing the note.
 	 * @return String textual representation of the specified note.
 	 */
 	public static String getNoteName(int note) {

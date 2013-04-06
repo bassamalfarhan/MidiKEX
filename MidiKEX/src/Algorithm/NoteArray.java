@@ -1,8 +1,9 @@
 package Algorithm;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
-public class NoteArray {
+public class NoteArray implements Iterable<Note> {
 	private ArrayList<Note> sequence;
 
 	public NoteArray() {
@@ -20,12 +21,23 @@ public class NoteArray {
 	public int getStretch(int n1, int n2) {
 		if (n1 == n2) {
 			return 0;
-		} else if (n1 > n2) {
+		} 
+		else if (n1 > n2) {
 			int temp = n2;
 			n2 = n1;
 			n1 = temp;
 		}
 		return sequence.get(n2).getValue() - sequence.get(n1).getValue();
+	}
+	
+	public int getStretchDirection(int n1, int n2) {
+		if (n1 == n2) {
+			return 0;
+		} else if (sequence.get(n1).getValue() > sequence.get(n2).getValue()) {
+			return -1;
+		}else{
+			return 1;
+		}
 	}
 
 	public int getBlackCount() {
@@ -65,6 +77,11 @@ public class NoteArray {
 
 	public int length() {
 		return sequence.size();
+	}
+
+	@Override
+	public Iterator<Note> iterator() {
+		return sequence.iterator();
 	}
 
 }
