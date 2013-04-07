@@ -6,10 +6,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import Algorithm.Note;
+import Algorithm.NoteArray;
+
 public class FileManager {
-	
+
 	/**
 	 * Loads the boundaries of the generated table.
+	 * 
 	 * @param filename name of the file.
 	 * @return boolean matrix containing the boundaries.
 	 */
@@ -64,8 +68,7 @@ public class FileManager {
 	/**
 	 * Reads in the handspans from the given file.
 	 * 
-	 * @param filename
-	 *            to be read.
+	 * @param filename to be read.
 	 * @return a matrix representation of the handspans.
 	 */
 	public static int[][] loadHandSpan(String filename) {
@@ -103,6 +106,50 @@ public class FileManager {
 			}
 
 			return matrix;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (input != null) {
+					input.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	public static NoteArray loadSequence(String filename) {
+		BufferedReader input = null;
+		try {
+			input = new BufferedReader(new InputStreamReader(
+					new FileInputStream(new File("resources/" + filename))));
+
+			NoteArray na = new NoteArray();
+
+			while (true) {
+				String s = input.readLine();
+
+				if (s.startsWith("###")) {
+					break;
+				}
+
+				String[] eList = s.split(" ");
+				for (int i = 0; i < eList.length; ++i) {
+					na.addNote(new Note(eList[i].trim()));
+				}
+			}
+
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+
+			return na;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

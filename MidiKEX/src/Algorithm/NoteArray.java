@@ -10,6 +10,10 @@ public class NoteArray implements Iterable<Note> {
 		sequence = new ArrayList<Note>();
 	}
 
+	public NoteArray(ArrayList<Note> al) {
+		sequence = al;
+	}
+
 	public void addNote(Note note) {
 		sequence.add(sequence.size(), note);
 	}
@@ -21,21 +25,20 @@ public class NoteArray implements Iterable<Note> {
 	public int getStretch(int n1, int n2) {
 		if (n1 == n2) {
 			return 0;
-		} 
-		else if (n1 > n2) {
+		} else if (n1 > n2) {
 			int temp = n2;
 			n2 = n1;
 			n1 = temp;
 		}
 		return sequence.get(n2).getValue() - sequence.get(n1).getValue();
 	}
-	
+
 	public int getStretchDirection(int n1, int n2) {
 		if (n1 == n2) {
 			return 0;
 		} else if (sequence.get(n1).getValue() > sequence.get(n2).getValue()) {
 			return -1;
-		}else{
+		} else {
 			return 1;
 		}
 	}
@@ -69,11 +72,30 @@ public class NoteArray implements Iterable<Note> {
 		return sequence.get(n1).isBlack();
 	}
 
-	// TODO implement a toString method for a sequence...
-	// @Override
-	// public String toString(){
-	// return "TODO";
-	// }
+	public NoteArray[] getStaccatoSeparated() {
+		NoteArray[] na = new NoteArray[getStaccatoCount()
+				+ (sequence.get(sequence.size() - 1).isStaccato() ? 0 : 1)];
+
+		na[0] = new NoteArray();
+		for (int i = 0, stc = 0; i < sequence.size(); ++i) {
+			na[stc].addNote(sequence.get(i));
+			if (sequence.get(i).isStaccato() && (++stc) != na.length) {
+				na[stc] = new NoteArray();
+			}
+		}
+
+		return na;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (Note note : sequence) {
+			sb.append(note.getName());
+			sb.append(" ");
+		}
+		return sb.toString();
+	}
 
 	public int length() {
 		return sequence.size();

@@ -1,5 +1,7 @@
 package UI;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -8,6 +10,9 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.ShortMessage;
 
+import Algorithm.Difficulty;
+import Algorithm.NoteArray;
+import Utilities.FileManager;
 import Utilities.MidiReceiver;
 import Utilities.MidiTransmitter;
 
@@ -63,12 +68,18 @@ public class CmdController {
 
 		Scanner s = new Scanner(System.in);
 		String line = null;
+
+		println("Hello!");
+		println("The command to process a musical sequence from the default file is 'process'");
+		
+		print("> ");
 		while (s.hasNextLine()) {
 			line = s.nextLine();
 			if (line.trim().equals("exit"))
 				break;
 
 			processCommand(line);
+			print("\n> ");
 		}
 		s.close();
 	}
@@ -84,7 +95,6 @@ public class CmdController {
 			println((id++) + "\t" + device);
 		}
 		println("------------------------------------");
-		println("");
 	}
 
 	/**
@@ -113,8 +123,11 @@ public class CmdController {
 	 * to indicate the note to be off, this case is supported by the velocity
 	 * based parameter.
 	 * 
-	 * @param toggle note state indicator
-	 * @param velocityBased true : use note_on command + set velocity to 0 if toggle = false
+	 * @param toggle
+	 *            note state indicator
+	 * @param velocityBased
+	 *            true : use note_on command + set velocity to 0 if toggle =
+	 *            false
 	 */
 	public void playNote(int note, Toggle toggle, boolean velocityBased) {
 		int noteOnOffVelocity = 64;
@@ -163,7 +176,8 @@ public class CmdController {
 	/**
 	 * Overrides the system.out.println for future compatibility issues
 	 * 
-	 * @param string The string to be passed thru to system.out.println
+	 * @param string
+	 *            The string to be passed thru to system.out.println
 	 */
 	public void println(Object string) {
 		System.out.println(string);
@@ -172,7 +186,8 @@ public class CmdController {
 	/**
 	 * Overrides the system.out.print for future compatibility issues.
 	 * 
-	 * @param string The string to be passed thru to system.out.print
+	 * @param string
+	 *            The string to be passed thru to system.out.print
 	 */
 	public void print(Object string) {
 		System.out.print(string);
@@ -195,6 +210,9 @@ public class CmdController {
 		case "exit":
 			println("There is no way out atm, sorry...");
 			break;
+		case "process":
+			processFingering(FileManager.loadSequence("sequence"));
+			break;
 		default:
 			String[] divider = null;
 			if (line.startsWith("set transmitter")) {
@@ -207,6 +225,38 @@ public class CmdController {
 						.trim()));
 			}
 			break;
+		}
+	}
+
+	private void processFingering(NoteArray sequence) {
+		println("Sequence loaded: " + sequence);
+		print("Processing... ");
+
+		long time = 0, totalTime = 0;
+
+		NoteArray[] na = sequence.getStaccatoSeparated();
+
+		ArrayList<int[][]> fl = new ArrayList<int[][]>();
+
+		int seqLen = 0;
+		for (int i = 0; i < na.length; ++i) {
+			time = System.currentTimeMillis();
+
+			fl.add(Difficulty.getFingerings(na[i]));
+			seqLen += fl.get(i).length;
+
+			totalTime += (System.currentTimeMillis() - time);
+		}
+
+		println("[DONE]");
+		println(seqLen + " fingerings for " + na.length
+				+ " part(s) were generated in " + totalTime + " ms");
+
+		for (int i = 0; i < fl.size(); ++i) {
+			println("\n"+na[i]);
+			for (int j = 0; j < fl.get(i).length; ++j) {
+				println(Arrays.toString(fl.get(i)[j]));
+			}
 		}
 	}
 }
