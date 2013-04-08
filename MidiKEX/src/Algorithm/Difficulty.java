@@ -317,6 +317,39 @@ public class Difficulty {
 							}
 						}
 						
+						
+						/*
+						 * Because it's 2013...
+						 * RULE 13!
+						 * THE CHORD HANDLER 
+						 */
+						
+						boolean twinDragonsEffect = false;
+						if(seq.getChordIndex(currentPos) > 1){
+							if(sIndex < 5){
+								continue;
+							}
+							
+							Fingering n2 = bruceLee,
+									  n1 = fing;
+							
+							for(int u = seq.getChordIndex(currentPos)-1; u > 0; --u){
+								Fingering localN1 = n1;
+								for(int v = u; v > 0; --v, localN1 = localN1.getParent()){
+//									System.err.println("f1: "+localN1.getNumber()+" f2: "+n2.getNumber()+" n1: "+localN1.getNoteNumber()+" n2: "+n2.getNoteNumber());
+									if((handspan.getSpan(Type.MinRel, localN1.getNumber(), n2.getNumber()) > seq.getStretch(n2.getNoteNumber(), localN1.getNoteNumber()))
+									|| (seq.getStretch(n2.getNoteNumber(), localN1.getNoteNumber()) > handspan.getSpan(Type.MaxRel, localN1.getNumber(), n2.getNumber()))){
+										twinDragonsEffect = true;
+									}
+								}
+								n1 = n1.getParent();
+								n2 = n2.getParent();	
+							}
+						}
+						if(twinDragonsEffect){
+							continue;
+						}
+												
 						/* ****************************************************** */
 						/*
 						 * END OF RULE IMPLEMENTATION

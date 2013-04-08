@@ -17,6 +17,12 @@ public class NoteArray implements Iterable<Note> {
 	public void addNote(Note note) {
 		sequence.add(sequence.size(), note);
 	}
+	
+	public void addNote(Note note, int chordIndex) {
+		int index = sequence.size();
+		sequence.add(index, note);
+		sequence.get(index).setChordIndex(chordIndex);
+	}
 
 	/**
 	 * Calculates and returns the number of semitones between two notes in the
@@ -90,9 +96,29 @@ public class NoteArray implements Iterable<Note> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (Note note : sequence) {
-			sb.append(note.getName());
-			sb.append(" ");
+		
+		boolean chord = false;
+		for (int i = 0; i < sequence.size(); ++i) {
+			
+			if(i != 0)
+				sb.append(" ");
+			
+			if(!chord && sequence.get(i).getChordIndex() > 0){
+				sb.append("{");
+				chord = true;
+			}	
+			
+			sb.append(sequence.get(i).getName());
+			
+//			sb.append("("+sequence.get(i).getValue()+")");
+			
+			if(chord && 
+				((sequence.size() != i+1 && sequence.get(i+1).getChordIndex() == 0)
+				|| sequence.size() == i+1)
+				){
+				sb.append("}");
+				chord = false;
+			}
 		}
 		return sb.toString();
 	}
@@ -106,4 +132,7 @@ public class NoteArray implements Iterable<Note> {
 		return sequence.iterator();
 	}
 
+	public int getChordIndex(int noteIndex){
+		return sequence.get(noteIndex).getChordIndex();
+	}
 }

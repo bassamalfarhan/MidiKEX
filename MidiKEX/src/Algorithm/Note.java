@@ -5,6 +5,7 @@ import java.util.Arrays;
 public class Note {
 	private int value;
 	private boolean staccato, black;
+	private int chordIndex;
 
 	/**
 	 * Names of the notes listed in the order they occur in.
@@ -91,5 +92,13 @@ public class Note {
 	 */
 	public static String getNoteName(int note) {
 		return noteNames[note % 12] + ((note / 12) - 1);
+	}
+
+	public int getChordIndex() {
+		return chordIndex;
+	}
+
+	public void setChordIndex(int chordIndex) {
+		this.chordIndex = chordIndex;
 	}
 }

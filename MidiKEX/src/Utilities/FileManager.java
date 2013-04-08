@@ -120,6 +120,11 @@ public class FileManager {
 		return null;
 	}
 
+	/**
+	 * TODO Comment
+	 * @param filename
+	 * @return
+	 */
 	public static NoteArray loadSequence(String filename) {
 		BufferedReader input = null;
 		try {
@@ -136,8 +141,30 @@ public class FileManager {
 				}
 
 				String[] eList = s.split(" ");
+				int chordCounter = 0;
+				boolean chord = false;
 				for (int i = 0; i < eList.length; ++i) {
-					na.addNote(new Note(eList[i].trim()));
+					eList[i] = eList[i].trim();
+					
+					/* Chord control */
+					if(!chord && eList[i].contains("{")){
+						eList[i] = eList[i].replace("{", "");
+						chord = true;
+						++chordCounter;
+					}
+					
+					na.addNote(new Note(eList[i]), chordCounter);
+					
+					if(chord){
+						++chordCounter;
+						if(eList[i].contains("}")){
+							eList[i] = eList[i].replace("}", "");
+							chord = false;
+							chordCounter = 0;
+						}
+					}
+					
+					/* eocc */
 				}
 			}
 
