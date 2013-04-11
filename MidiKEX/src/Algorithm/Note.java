@@ -1,7 +1,5 @@
 package Algorithm;
 
-import java.util.Arrays;
-
 public class Note {
 	private int value;
 	private boolean staccato, black;
@@ -10,7 +8,8 @@ public class Note {
 	/**
 	 * Names of the notes listed in the order they occur in.
 	 */
-	public static final String[] noteNames = { "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#" };
+	public static final String[] noteNames = { "C", "C#", "D", "D#", "E", "F",
+			"F#", "G", "G#", "A", "A#", "B" };
 
 	public static final boolean[] blackIndex = { false, true, false, true,
 			false, false, true, false, true, false, true, false };
@@ -39,29 +38,29 @@ public class Note {
 		int value = 0;
 		if (note.charAt(1) == '#') {
 			value = getNameIndex(note.substring(0, 2));
-			value += 12*((((int)note.charAt(2))-48)+1);
+			value += 12 * ((((int) note.charAt(2)) - 48) + 1);
 			black = true;
 		} else {
 			value = getNameIndex(note.substring(0, 1));
-			value += 12*((((int)note.charAt(1))-48)+1);
+			value += 12 * ((((int) note.charAt(1)) - 48) + 1);
 		}
-		
+
 		this.value = value;
 	}
 
-	private int getNameIndex(String noteName){
+	private int getNameIndex(String noteName) {
 		int pos = -1;
-		
-		for(int i = 0; i < noteNames.length; ++i){
-			if(noteNames[i].equals(noteName)){
+
+		for (int i = 0; i < noteNames.length; ++i) {
+			if (noteNames[i].equals(noteName)) {
 				pos = i;
 				break;
 			}
 		}
-		
+
 		return pos;
 	}
-	
+
 	public boolean isStaccato() {
 		return staccato;
 	}
@@ -80,7 +79,7 @@ public class Note {
 
 	public String getName() {
 		return noteNames[value % 12] + ((value / 12) - 1)
-				+ (staccato ? "." : "");
+				+ (staccato ? "." : "") + " (" + value + ")";
 	}
 
 	/**

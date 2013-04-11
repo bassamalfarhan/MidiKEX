@@ -1,8 +1,7 @@
 package Algorithm;
 
 import java.util.ArrayList;
-
-import javax.sound.midi.Sequence;
+import java.util.Collections;
 
 import Utilities.FileManager;
 import Algorithm.HandSpan.Type;
@@ -296,8 +295,8 @@ public class Difficulty {
 
 						if (!seq.isBlack(currentPos)
 								&& seq.isBlack(fing.getNoteNumber())
-								&& (fing.getNoteNumber() == 1 || fing
-										.getNoteNumber() == 5)) {
+								&& (fing.getNumber() == 1 || fing
+										.getNumber() == 5)) {
 							bruceLee.increaseDifficulty(2);
 						}
 
@@ -386,6 +385,7 @@ public class Difficulty {
 	private void testData() {
 		seq = new NoteArray();
 
+		/*
 		// First 17 notes of Für Elise
 		int notes[] = { 16, 15, 16, 15, 16, 11, 14, 12, 9, 0, 4, 9, 11, 4, 8,
 				11, 12 };
@@ -395,7 +395,16 @@ public class Difficulty {
 			note = new Note(notes[i] + 12 * 4);
 			seq.addNote(note);
 		}
+		*/
 
+		String seqStr[] = "C4 G3 E3 C4 D4 C4 B3 G#3".split(" ");
+		Note note = null;
+		for (int i = 0; i < seqStr.length; ++i) {
+			note = new Note(seqStr[i]);
+			seq.addNote(note);
+		}
+		
+		
 		fingering = generateFingering();
 
 		System.out.print("Sequence: ");
@@ -423,10 +432,25 @@ public class Difficulty {
 			best = best.getParent();
 		}
 		for (int i = 0; i < seq.length(); ++i) {
-			System.out.print(fff[i].getNumber() + " (" + fff[i].getNoteNumber()
-					+ ") ");
+			System.out.print(fff[i].getNumber() + " ");
 		}
 		System.out.println();
+		
+		
+		Collections.sort(endPaths);
+		for (Fingering f : endPaths) {
+			best = f;
+			System.out.print(best.getDifficulty()+" -:- ");
+			for (int i = seq.length(); i > 0; --i) {
+				fff[i - 1] = best;
+				best = best.getParent();
+			}
+			for (int i = 0; i < seq.length(); ++i) {
+				System.out.print(fff[i].getNumber() + " ");
+			}
+			System.out.println();
+		}
+		
 
 		/* DEBUG */System.out.println("endPath Size: " + bestOfTheBest.size());
 	}
@@ -447,8 +471,9 @@ public class Difficulty {
 
 		Fingering best = endPaths.get(0);
 		for (Fingering f : endPaths) {
-			if (f.getDifficulty() <= best.getDifficulty())
+			if (f.getDifficulty() <= best.getDifficulty()){
 				best = f;
+			}
 		}
 
 		ArrayList<Fingering> bestOfTheBest = new ArrayList<Fingering>();
@@ -479,7 +504,6 @@ public class Difficulty {
 			}
 			System.out.println();
 		}
-
 		long time = System.currentTimeMillis();
 		testData();
 		System.out.println("\nTime: " + (System.currentTimeMillis() - time)
